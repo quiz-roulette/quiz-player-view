@@ -15,10 +15,16 @@
           style="max-width: 20rem"
           class="mb-2"
         >
-          Category Name: <input v-model="category" placeholder="Caetgory" /><br/>
-          <br/>
-          Quesiton Bank Size: <input v-model="size" placeholder="Size" /><br/>
-          <br/>
+          Category Name:
+          <select v-model="category">
+            <option v-for="(item, index) in categories" :key="index" v-bind:value="item">
+              {{ item }}
+            </option>
+          </select>
+          <br />
+          <br />
+          Quesiton Bank Size: <input v-model="size" placeholder="Size" /><br />
+          <br />
           <b-button @click="startQuizFunc()">Start Quiz</b-button>
         </b-card>
       </span>
@@ -76,25 +82,19 @@ export default {
       timer: null,
       startQuiz: false,
       questions: [],
-      category: 'Google Cloud Certified Associate Cloud Engineer',
+      category: "Google Cloud Certified Associate Cloud Engineer",
       size: 20,
-      categories: ""
+      categories: "",
     };
   },
   mounted() {
     axios
-        .post(process.env.VUE_APP_QUESTION_BANK_API + "/graphql", {
-          query:
-            '{\n  getCategories \n}',
-        })
-        .then((response) => {
-          var res = response.data.data.getCategories
-          var str = "";
-          res.forEach(element => {
-            str += "<code>"+element+"</code>"
-          });
-          this.categories = str;
-        });
+      .post(process.env.VUE_APP_QUESTION_BANK_API + "/graphql", {
+        query: "{\n  getCategories \n}",
+      })
+      .then((response) => {
+        this.categories = response.data.data.getCategories;
+      });
   },
   methods: {
     startQuizFunc() {
