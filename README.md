@@ -25,3 +25,15 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### Deploying to GCP
+
+#### Step 1: Build the image
+```
+gcloud builds submit --tag gcr.io/endless-comfort-334004/quiz-vue-app
+```
+
+#### Step 2: Use Cloud Run
+```
+gcloud run deploy --image gcr.io/endless-comfort-334004/quiz-vue-app --platform managed
+```
