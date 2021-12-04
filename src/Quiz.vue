@@ -126,15 +126,11 @@ export default {
       }
       if (nextQuestion < this.questions.length) {
         this.currentQuestion = nextQuestion;
-        // this.$store.state.questionAttended = this.currentQuestion;
-        // localStorage.setItem('qattended', this.currentQuestion)
 
         this.countDown = 30;
         this.countDownTimer();
       } else {
-        // localStorage.removeItem('qattended')
         this.showScore = true;
-        // localStorage.setItem('testComplete',this.showScore)
       }
     },
     countDownTimer() {
@@ -153,13 +149,7 @@ export default {
       return this.category;
     },
   },
-  created() {
-    //  alert(this.$store.state.questionAttended)
-    //    this.showScore = localStorage.getItem('testComplete') || false
-    //    this.currentQuestion = localStorage.getItem('qattended') || 0
-    //    this.countDownTimer()
-    //    this.fetchQuiz()
-  },
+  created() {},
 };
 </script>
 
@@ -203,17 +193,4 @@ export default {
   border-top-right-radius: calc(0.25rem - 1px);
   height: 350px;
 }
-/* .ans-option-btn {
-  width: 100%;
-  font-size: 16px;
-  color: #ffffff;
-  background-color: #252d4a;
-  border-radius: 15px;
-  display: flex;
-  padding: 5px;
-  justify-content: flex-start;
-  align-items: center;
-  border: 5px solid #234668;
-  cursor: pointer;
-} */
 </style>
