@@ -1,0 +1,65 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: quiz-vue-app
+  namespace: '702526362832'
+  selfLink: /apis/serving.knative.dev/v1/namespaces/702526362832/services/quiz-vue-app
+  uid: 6a3da3c2-56c6-42b3-a451-f1fe3d57fb3b
+  resourceVersion: AAXSVReAx14
+  generation: 4
+  creationTimestamp: '2021-12-04T15:04:47.301750Z'
+  labels:
+    cloud.googleapis.com/location: asia-southeast1
+  annotations:
+    run.googleapis.com/client-name: cloud-console
+    serving.knative.dev/creator: mightymindssg50@gmail.com
+    serving.knative.dev/lastModifier: mightymindssg50@gmail.com
+    client.knative.dev/user-image: gcr.io/endless-comfort-334004/quiz-vue-app
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+spec:
+  template:
+    metadata:
+      name: quiz-vue-app-00004-nex
+      annotations:
+        run.googleapis.com/client-name: cloud-console
+        client.knative.dev/user-image: gcr.io/endless-comfort-334004/quiz-vue-app
+        run.googleapis.com/execution-environment: gen1
+        autoscaling.knative.dev/maxScale: '1'
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: 702526362832-compute@developer.gserviceaccount.com
+      containers:
+      - image: gcr.io/endless-comfort-334004/quiz-vue-app
+        ports:
+        - name: http1
+          containerPort: 8080
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+  traffic:
+  - percent: 100
+    latestRevision: true
+status:
+  observedGeneration: 4
+  conditions:
+  - type: Ready
+    status: 'True'
+    lastTransitionTime: '2021-12-04T17:09:51.829725Z'
+  - type: ConfigurationsReady
+    status: 'True'
+    lastTransitionTime: '2021-12-04T17:09:46.575158Z'
+  - type: RoutesReady
+    status: 'True'
+    lastTransitionTime: '2021-12-04T17:09:51.922014Z'
+  latestReadyRevisionName: quiz-vue-app-00004-nex
+  latestCreatedRevisionName: quiz-vue-app-00004-nex
+  traffic:
+  - revisionName: quiz-vue-app-00004-nex
+    percent: 100
+    latestRevision: true
+  url: https://quiz-vue-app-542ivuujka-as.a.run.app
+  address:
+    url: https://quiz-vue-app-542ivuujka-as.a.run.app
