@@ -1,3 +1,4 @@
+<!-- Note to self: maxTimeout defines and states the rules if it is NOT zero, timer will work -->
 <template>
   <div class="d-flex justify-content-center">
     <div v-if="showScore">
@@ -17,12 +18,18 @@
         >
           Category Name:
           <select v-model="category">
-            <option v-for="(item, index) in categories" :key="index" v-bind:value="item">
+            <option
+              v-for="(item, index) in categories"
+              :key="index"
+              v-bind:value="item"
+            >
               {{ item }}
             </option>
           </select>
           <br />
           <br />
+          Timer
+          <input v-model="maxTimeout" placeholder="in seconds" /><br /><br />
           Quesiton Bank Size: <input v-model="size" placeholder="Size" /><br />
           <br />
           <b-button @click="startQuizFunc()">Start Quiz</b-button>
@@ -41,12 +48,13 @@
           <br />
           <b-progress
             variant="warning"
-            :max="30"
+            :max="maxTimeout"
             :value="countDown"
             height="4px"
+            v-if="maxTimeout != 0"
           ></b-progress>
 
-          <b-card-text>
+          <b-card-text v-if="maxTimeout != 0">
             <span style="font-size: 40px"
               ><strong>{{ countDown }} </strong></span
             >
@@ -64,6 +72,17 @@
               >{{ option.text }}</b-button
             >
           </div>
+          <br/>
+          <div v-if="maxTimeout == 0 && showAnswer">
+            <b-alert variant="success" v-if="isAnswerCorrect" show>{{ questions[currentQuestion].choice.filter(e => e.isCorrect).map(e => e.text) }}</b-alert>
+            <b-alert variant="danger" v-if="!isAnswerCorrect" show>{{ questions[currentQuestion].choice.filter(e => e.isCorrect).map(e => e.text) }}</b-alert>
+          </div>
+          <br/>
+          <b-button
+              @click="handleNext()"
+              class="ans-option-btn"
+              variant="primary"
+              >Next</b-button>
         </b-card>
       </span>
     </div>
@@ -85,6 +104,9 @@ export default {
       category: "Google Cloud Certified Associate Cloud Engineer",
       size: 20,
       categories: "",
+      maxTimeout: 0,
+      showAnswer: false,
+      isAnswerCorrect: false
     };
   },
   mounted() {
@@ -98,6 +120,7 @@ export default {
   },
   methods: {
     startQuizFunc() {
+      this.countDown = this.maxTimeout
       this.getQuestions(this.category, this.size);
     },
     getQuestions(category, size) {
@@ -115,20 +138,32 @@ export default {
           let selected = shuffled.slice(0, size);
           this.questions = selected;
           this.startQuiz = true;
-          this.countDownTimer();
+          if (this.maxTimeout != 0) {
+            this.countDownTimer();
+          }
         });
     },
     handleAnswerClick(isCorrect) {
       clearTimeout(this.timer);
-      let nextQuestion = this.currentQuestion + 1;
+      
       if (isCorrect) {
         this.score = this.score + 1;
+        this.isAnswerCorrect = true
       }
+      
+      this.showAnswer = true;
+    },
+    handleNext(){
+      this.showAnswer = false;
+      this.isAnswerCorrect = false;
+      let nextQuestion = this.currentQuestion + 1;
       if (nextQuestion < this.questions.length) {
         this.currentQuestion = nextQuestion;
 
-        this.countDown = 30;
-        this.countDownTimer();
+        this.countDown = this.maxTimeout;
+        if (this.maxTimeout != 0) {
+          this.countDownTimer();
+        }
       } else {
         this.showScore = true;
       }
@@ -140,7 +175,7 @@ export default {
           this.countDownTimer();
         }, 1000);
       } else {
-        this.handleAnswerClick(false);
+        this.handleNext();
       }
     },
   },
