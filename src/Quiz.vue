@@ -12,7 +12,7 @@
           img-src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
           img-alt="Image"
           img-top
-          title="Simple Quiz Application"
+          title="Simple Quiz Application v2"
           style="max-width: 20rem"
           class="mb-2"
         >
@@ -72,17 +72,31 @@
               >{{ option.text }}</b-button
             >
           </div>
-          <br/>
+          <br />
           <div v-if="maxTimeout == 0 && showAnswer">
-            <b-alert variant="success" v-if="isAnswerCorrect" show>{{ questions[currentQuestion].choice.filter(e => e.isCorrect).map(e => e.text) }}</b-alert>
-            <b-alert variant="danger" v-if="!isAnswerCorrect" show>{{ questions[currentQuestion].choice.filter(e => e.isCorrect).map(e => e.text) }}</b-alert>
+            <b-alert variant="success" v-if="isAnswerCorrect" show>{{
+              questions[currentQuestion].choice
+                .filter((e) => e.isCorrect)
+                .map((e) => e.text)
+            }}</b-alert>
+            <b-alert variant="danger" v-if="!isAnswerCorrect" show>{{
+              questions[currentQuestion].choice
+                .filter((e) => e.isCorrect)
+                .map((e) => e.text)
+            }}</b-alert>
           </div>
-          <br/>
+          <div v-if="maxTimeout == 0 && showAnswer">
+            <b-alert variant="info" show>{{
+              questions[currentQuestion].description
+            }}</b-alert>
+          </div>
+          <br />
           <b-button
-              @click="handleNext()"
-              class="ans-option-btn"
-              variant="primary"
-              >Next</b-button>
+            @click="handleNext()"
+            class="ans-option-btn"
+            variant="primary"
+            >Next</b-button
+          >
         </b-card>
       </span>
     </div>
@@ -102,11 +116,11 @@ export default {
       startQuiz: false,
       questions: [],
       category: "Google Cloud Certified Associate Cloud Engineer",
-      size: 20,
+      size: 10,
       categories: "",
       maxTimeout: 0,
       showAnswer: false,
-      isAnswerCorrect: false
+      isAnswerCorrect: false,
     };
   },
   mounted() {
@@ -120,7 +134,7 @@ export default {
   },
   methods: {
     startQuizFunc() {
-      this.countDown = this.maxTimeout
+      this.countDown = this.maxTimeout;
       this.getQuestions(this.category, this.size);
     },
     getQuestions(category, size) {
@@ -129,7 +143,7 @@ export default {
           query:
             '{\n  getQuestions(category: "' +
             category +
-            '") {\n    text,\n    choice {\n      text\n      isCorrect\n    }\n  }\n}',
+            '") {\n    text,\n    choice {\n      text\n      isCorrect\n    }\n  description }\n}',
         })
         .then((response) => {
           var array = response.data.data.getQuestions;
@@ -145,15 +159,15 @@ export default {
     },
     handleAnswerClick(isCorrect) {
       clearTimeout(this.timer);
-      
+
       if (isCorrect) {
         this.score = this.score + 1;
-        this.isAnswerCorrect = true
+        this.isAnswerCorrect = true;
       }
-      
+
       this.showAnswer = true;
     },
-    handleNext(){
+    handleNext() {
       this.showAnswer = false;
       this.isAnswerCorrect = false;
       let nextQuestion = this.currentQuestion + 1;
@@ -166,6 +180,15 @@ export default {
         }
       } else {
         this.showScore = true;
+
+        
+        var o = { message: `Showing final results ${this.score} for category ${this.category}`}
+        console.log(o)
+        axios
+          .post(process.env.VUE_APP_QUESTION_BANK_API + "/logs", o )
+          .then((response) => {
+            console.log("submitted log {}", response);
+          });
       }
     },
     countDownTimer() {

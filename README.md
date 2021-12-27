@@ -35,5 +35,11 @@ gcloud builds submit --tag gcr.io/endless-comfort-334004/quiz-vue-app
 
 #### Step 2: Use Cloud Run
 ```
-gcloud run deploy --image gcr.io/endless-comfort-334004/quiz-vue-app --platform managed
+gcloud run deploy quiz-vue-app --image gcr.io/endless-comfort-334004/quiz-vue-app --platform managed --region asia-southeast1
+```
+
+For No traffic:
+```
+gcloud run deploy quiz-vue-app --image gcr.io/endless-comfort-334004/quiz-vue-app --platform managed --region asia-southeast1 
+--no-traffic --tag green
 ```

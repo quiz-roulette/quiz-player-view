@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quiz-vue-deployment
+spec:
+  selector:
+    matchLabels:
+      name: quiz-vue-app
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        name: quiz-vue-app
+    spec:
+      containers:
+      - name: quiz-vue
+        env:
+        - name: VUE_APP_QUESTION_BANK_API
+          value: http://question-bank:80
+        image: "quiz-roulette/quiz-vue-js:latest"
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Never
