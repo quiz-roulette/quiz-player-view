@@ -31,6 +31,9 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 #### Step 1: Build the image
 ```
 gcloud builds submit --tag gcr.io/endless-comfort-334004/quiz-vue-app
+
+eval $(minikube docker-env)
+docker build -t gcr.io/endless-comfort-334004/quiz-vue-app .
 ```
 
 #### Step 2: Use Cloud Run

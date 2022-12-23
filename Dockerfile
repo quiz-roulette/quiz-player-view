@@ -1,9 +1,9 @@
-FROM node:lts-alpine
+FROM node:lts-alpine3.14
 
 # install simple http server for serving static content
 RUN npm install -g http-server
 
-ENV VUE_APP_QUESTION_BANK_API=https://question-bank-nodejs-542ivuujka-as.a.run.app
+# ENV VUE_APP_QUESTION_BANK_API=https://question-bank-nodejs-542ivuujka-as.a.run.app
 
 # make the 'app' folder the current working directory
 WORKDIR /app

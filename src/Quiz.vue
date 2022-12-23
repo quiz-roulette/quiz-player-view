@@ -66,7 +66,7 @@
             <b-button
               :key="index"
               v-for="(option, index) in questions[currentQuestion].choice"
-              @click="handleAnswerClick(option.isCorrect)"
+              @click="handleAnswerClick(option.isCorrect, option.text)"
               class="ans-option-btn"
               variant="primary"
               >{{ option.text }}</b-button
@@ -95,6 +95,7 @@
             @click="handleNext()"
             class="ans-option-btn"
             variant="primary"
+            v-if="maxTimeout == 0"
             >Next</b-button
           >
         </b-card>
@@ -105,6 +106,7 @@
 
 <script>
 var axios = require("axios");
+
 export default {
   data() {
     return {
@@ -121,23 +123,39 @@ export default {
       maxTimeout: 0,
       showAnswer: false,
       isAnswerCorrect: false,
+      userid: Date.now(),
     };
   },
   mounted() {
-    axios
-      .post(process.env.VUE_APP_QUESTION_BANK_API + "/graphql", {
-        query: "{\n  getCategories \n}",
-      })
+    console.log(this.$route);
+    if ("quizid" in this.$route.query) {
+      axios
+      .get(process.env.VUE_APP_QUIZ_APP_API+"/quiz/"+this.$route.query.quizid)
       .then((response) => {
-        this.categories = response.data.data.getCategories;
-      });
+        this.category = response.data.categories[0];
+        this.size = response.data.size;
+        this.maxTimeout = response.data.timer;
+        this.startQuizFunc();
+      })
+      
+    } else {
+      axios
+        .post(process.env.VUE_APP_QUESTION_BANK_API + "/graphql", {
+          query: "{\n  getCategories \n}",
+        })
+        .then((response) => {
+          this.categories = response.data.data.getCategories;
+        });
+    }
   },
   methods: {
     startQuizFunc() {
+      console.log("startQuizFunc:: ")
       this.countDown = this.maxTimeout;
       this.getQuestions(this.category, this.size);
     },
     getQuestions(category, size) {
+      console.log("getQuestions:: ", category, size)
       axios
         .post(process.env.VUE_APP_QUESTION_BANK_API + "/graphql", {
           query:
@@ -157,17 +175,32 @@ export default {
           }
         });
     },
-    handleAnswerClick(isCorrect) {
+    handleAnswerClick(isCorrect, choiceText) {
       clearTimeout(this.timer);
-
+      this.selectedChoiceText = choiceText;
       if (isCorrect) {
         this.score = this.score + 1;
         this.isAnswerCorrect = true;
       }
-
-      this.showAnswer = true;
+      if(this.maxTimeout == 0){
+        this.showAnswer = true;
+      } else {
+        this.handleNext()
+      }
+      
     },
     handleNext() {
+      var o = {
+        QuizId: this.category + "_" + this.size,
+        QuizUserId: this.userid,
+        QuestionId: 11,
+        QuestionText: this.questions[this.currentQuestion].text,
+        ChoiceText: this.selectedChoiceText,
+        ChoiceId: 11,
+        Score: this.isAnswerCorrect ? 250 : 0,
+        TimeTaken: 0,
+      };
+      this.sendLogEvent(o);
       this.showAnswer = false;
       this.isAnswerCorrect = false;
       let nextQuestion = this.currentQuestion + 1;
@@ -180,15 +213,6 @@ export default {
         }
       } else {
         this.showScore = true;
-
-        
-        var o = { message: `Showing final results ${this.score} for category ${this.category}`}
-        console.log(o)
-        axios
-          .post(process.env.VUE_APP_QUESTION_BANK_API + "/logs", o )
-          .then((response) => {
-            console.log("submitted log {}", response);
-          });
       }
     },
     countDownTimer() {
@@ -200,6 +224,13 @@ export default {
       } else {
         this.handleNext();
       }
+    },
+    sendLogEvent(obj) {
+      axios
+        .post(process.env.VUE_APP_QUIZ_EVENT_LOG_API + "/quizlogs", obj)
+        .then((response) => {
+          console.log("submitted log {}", response);
+        });
     },
   },
   computed: {
