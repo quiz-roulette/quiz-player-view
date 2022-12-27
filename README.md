@@ -32,13 +32,13 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 To build Docker:
 
 ```
-docker build -t quizroulette/quiz-player-view:v1.0.0 .
+docker build -t quizroulette/quiz-player-view:v1.1.0 .
 ```
 
 To Deploy to Docker hub:
 
 ```
-docker push quizroulette/quiz-player-view:v1.0.0
+docker push quizroulette/quiz-player-view:v1.1.0
 ```
 
 
